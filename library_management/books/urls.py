@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from .views import BookViewSet, UserViewSet, checkout_log, return_log, CheckOutLogViewSet, AvailableBooksView
+from .views import BookViewSet, UserViewSet, CheckOutLogViewSet, AvailableBooksView
 from django.urls import path, include
 
 router = DefaultRouter()

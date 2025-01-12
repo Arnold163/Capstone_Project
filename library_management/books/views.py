@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.utils import timezone
-from .models import Book, User, CheckOutLog
+from .models import Book, User, CheckoutLog
 from .serializers import BookSerializer, UserSerializer, CheckOutBookSerializer, ReturnBookSerializer
 from rest_framework.generics import ListAPIView
 from django_filters.rest_framework import DjangoFilterBackend 
@@ -36,7 +36,7 @@ class CheckOutLogViewSet(viewsets.ViewSet):
             # Perform check-out
             book.available_copies -= 1
             book.save()
-            CheckOutLog.objects.create(user=user, book=book)
+            CheckoutLog.objects.create(user=user, book=book)
 
             return Response({'message': 'Book checked out successfully'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -45,7 +45,7 @@ class CheckOutLogViewSet(viewsets.ViewSet):
     def return_book(self, request):
         serializer = ReturnBookSerializer(data=request.data)
         if serializer.is_valid():
-            log = CheckOutLog.objects.filter(
+            log = CheckoutLog.objects.filter(
                 user_id=serializer.validated_data['user_id'],
                 book_id=serializer.validated_data['book_id'],
                 return_date__isnull=True,
@@ -74,7 +74,7 @@ class ReturnBookView(APIView):
             book_id = serializer.validated_data['book_id']
 
             # Update log and increase available copies
-            log = CheckOutLog.objects.get(user_id=user_id, book_id=book_id, return_date__isnull=True)
+            log = CheckoutLog.objects.get(user_id=user_id, book_id=book_id, return_date__isnull=True)
             log.return_date = timezone.now()
             log.save()
             book = log.book
